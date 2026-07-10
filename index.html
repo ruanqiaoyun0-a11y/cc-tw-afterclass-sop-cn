@@ -614,10 +614,22 @@ const courseData = {
           <p class="duration">综合应用 · 需达 60 分</p>
         </div>
         <div class="card">
-          <h2 class="card-title">📋 考核场景</h2>
-          <p>你刚完成 XX（S2 级别，5 岁）的体验课。妈妈在电话里说：</p>
-          <div class="customer-bubble">「我觉得小朋友好像不太喜欢数学，而且你们价格有点贵，我想再考虑一下。」</div>
-          <p>请写出你的<strong>完整回应话术</strong>，需覆盖：<strong>共情 → 观念强化 → 产品价值 → 异议处理 → 软关单</strong>。字数越多、维度覆盖越完整，得分越高。</p>
+          <h2 class="card-title">📋 考核场景：暖暖（S4-魔法水源）</h2>
+          <div class="case-report" style="background:#f8fafc;padding:12px 16px;border-radius:12px;margin:12px 0;font-size:14px;">
+            <p><strong>学员信息：</strong>暖暖，女，6岁10个月，一年级</p>
+            <p><strong>课前信息：</strong>性格外向，有在上画画班，数感一般，50以内的加减法还不会。</p>
+            <p><strong>陪同情况：</strong>妈妈有陪同。</p>
+            <p><strong>孩子表现：</strong>喜欢课堂，会主动回答问题，专注力 ok，理解能力 OK，学习态度端正。</p>
+            <p><strong>课后表现：</strong></p>
+            <ul style="margin:8px 0;padding-left:20px;">
+              <li><strong>环节一排序：</strong>能完成，能够有序枚举。</li>
+              <li><strong>环节二数字枚举：</strong>对三位数理解好，理解 0 不能在最前面，三位数读法熟练。</li>
+              <li><strong>环节三凑数计算：</strong>20 以内进退位加减法会但不熟，对如何枚举凑数不熟练，思路会混乱，带领时能知道下一步如何枚举；有序思考、分步思考意识需加强，需要多练习巩固。</li>
+            </ul>
+            <p><strong>是否匹配阶段：</strong>是，基础中。</p>
+            <p><strong>老师沟通反馈：</strong>家长有出席，已说明孩子情况及对应建议，家长无问题；介绍了五大模块以及正课会有更多练习题给孩子进一步巩固，重点介绍了计算会学到什么深度，已告知可以跟顾问老师沟通。</p>
+          </div>
+          <p>你作为 CC，要给暖暖妈妈打一个课后回访电话。请结合课后报告，写出你的<strong>完整话术</strong>，需覆盖：<strong>开场共情 → 解读报告（亮点+可进步点） → 观念强化 → 产品价值 → 异议处理（如家长仍有顾虑）→ 软关单</strong>。字数越多、越贴近报告内容，得分越高。</p>
         </div>
         <div class="card final-task-container" id="finalTaskContainer">
           <h3>✍️ 写下你的回应</h3>
@@ -940,16 +952,16 @@ function submitFinalTask() {
   if (finalTaskSubmitted) { showToast('终极考核已提交，不可重复作答', 'info'); return; }
 
   const dims = [
-    { name: '共情理解', terms: ['理解','懂','体会','感受','心情','担心','明白','知道'], weight: 25 },
-    { name: '观念强化', terms: ['长期','黄金','关键','基础','思维','逻辑','108','课纲','国小','培养'], weight: 25 },
-    { name: '价值传递', terms: ['游戏','趣味','覆盖','考点','品牌','师资','体系','课程'], weight: 25 },
-    { name: '异议处理', terms: ['价格','价值','贵','不喜','引导','年龄','小','考虑'], weight: 25 }
+    { name: '报告解读', terms: ['暖暖','S4','魔法水源','三位数','有序枚举','凑数','进退位','20以内','基础中'], weight: 25 },
+    { name: '共情开场', terms: ['理解','感受','喜欢','主动','专注','妈妈','看到'], weight: 25 },
+    { name: '观念强化', terms: ['黄金期','逻辑','思维','基础','系统','长期','培养','关键'], weight: 25 },
+    { name: '异议处理', terms: ['价格','价值','贵','考虑','效果','时间','引导'], weight: 25 }
   ];
   const dims2 = [
-    { name: '具体行动', terms: ['报名','体验','安排','连结','支付','规划','方案','名额','办理'], weight: 30 },
-    { name: '正面引导', terms: ['成长','进步','信心','相信','基础','关键','黄金','打底'], weight: 30 },
-    { name: '案例支撑', terms: ['案例','学员','类似','同龄','其他','家长','孩子'], weight: 20 },
-    { name: '闭环承诺', terms: ['反馈','服务','随时','Line','跟进','联系','协助'], weight: 20 }
+    { name: '产品价值', terms: ['五大模块','练习题','师资','专属','108','课纲','游戏','趣味'], weight: 30 },
+    { name: '具体动作', terms: ['报名','安排','规划','名额','体验','连结','支付','办理'], weight: 30 },
+    { name: '闭环服务', terms: ['Line','跟进','反馈','服务','老师','协助','联系'], weight: 20 },
+    { name: '案例感', terms: ['暖暖','孩子','课堂','表现','报告'], weight: 20 }
   ];
 
   function scoreDims(list) {
