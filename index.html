@@ -282,6 +282,34 @@ video { width: 100%; border-radius: var(--radius-sm); background: #000; }
   .score-circle { width: 56px; height: 56px; font-size: 22px; }
   .keyword-tag { font-size: 11px; padding: 3px 8px; }
 }
+
+/* ===== 学习助手 ===== */
+.assistant-fab { position: fixed; bottom: 84px; right: 24px; width: 52px; height: 52px; border-radius: 50%; background: linear-gradient(135deg,#f59e0b,#fbbf24); color:#fff; border:none; cursor:pointer; font-size:22px; box-shadow: var(--shadow-lg); z-index:95; display:flex; align-items:center; justify-content:center; }
+.assistant-overlay { position: fixed; inset:0; background: rgba(15,23,42,0.35); z-index:94; display:none; }
+.assistant-overlay.show { display:block; }
+.assistant-drawer { position: fixed; top:0; right:0; bottom:0; width: 384px; max-width: 92vw; background: var(--card); box-shadow: -6px 0 24px rgba(0,0,0,0.15); z-index:96; transform: translateX(100%); transition: transform 0.3s; display:flex; flex-direction:column; }
+.assistant-drawer.open { transform: translateX(0); }
+.ad-header { display:flex; justify-content:space-between; align-items:center; padding:16px 20px; background: var(--primary-dark); color:#fff; font-weight:700; font-size:15px; }
+.ad-close { background:none; border:none; color:#fff; font-size:22px; cursor:pointer; line-height:1; }
+.ad-tabs { display:flex; border-bottom:1px solid var(--border); }
+.ad-tab { flex:1; padding:10px 2px; background:none; border:none; border-bottom:2px solid transparent; font-size:12px; cursor:pointer; color:var(--text-secondary); }
+.ad-tab.active { border-bottom-color: var(--primary); color: var(--primary); font-weight:700; }
+.ad-search-wrap { padding:12px 20px 0; }
+.ad-search { width:100%; padding:8px 10px; border:1px solid var(--border); border-radius:8px; font-size:13px; box-sizing:border-box; }
+.ad-body { flex:1; overflow-y:auto; padding:16px 20px; }
+.script-item { border:1px solid var(--border); border-radius:8px; padding:10px 12px; margin-bottom:10px; background:#f8fafc; }
+.script-item .si-tag { display:inline-block; font-size:11px; background:#dbeafe; color:var(--primary-dark); padding:2px 8px; border-radius:10px; margin-bottom:6px; }
+.script-item .si-title { font-weight:700; font-size:13px; margin-bottom:4px; }
+.script-item .si-content { font-size:13px; color:#475569; line-height:1.6; }
+.script-item .si-copy { margin-top:6px; font-size:12px; color:var(--primary); cursor:pointer; background:none; border:none; padding:0; }
+.weak-item, .time-item { display:flex; justify-content:space-between; align-items:center; padding:10px 12px; border:1px solid var(--border); border-radius:8px; margin-bottom:8px; font-size:13px; }
+.weak-item button { font-size:12px; padding:4px 10px; border:1px solid var(--primary); background:#fff; color:var(--primary); border-radius:6px; cursor:pointer; }
+.badge-item { display:flex; flex-direction:column; align-items:flex-start; gap:4px; padding:12px 14px; border:1px solid var(--border); border-radius:8px; margin-bottom:8px; font-size:13px; }
+.badge-item.locked { opacity:0.5; background:#f8fafc; }
+.badge-item .b-ic { font-size:22px; }
+.badge-item .b-name { font-weight:700; }
+.badge-item .b-desc { font-size:12px; color:var(--text-secondary); }
+.empty-tip { color:var(--text-secondary); font-size:13px; text-align:center; padding:24px 12px; line-height:1.8; }
 </style>
 </head>
 <body>
@@ -362,6 +390,24 @@ video { width: 100%; border-radius: var(--radius-sm); background: #000; }
   <h3>📝 学习笔记 — <span id="notesChapterLabel" style="font-weight:400;font-size:13px;color:var(--text-secondary);"></span></h3>
   <textarea id="notesTextarea" placeholder="在这里记录你的学习心得..."></textarea>
   <button class="btn btn-outline" onclick="toggleNotes()" style="margin-top:12px;width:100%;">关闭</button>
+</div>
+
+
+<!-- 学习助手 -->
+<button id="assistantFab" class="assistant-fab" onclick="toggleAssistant()" title="学习助手">📚</button>
+<div id="assistantOverlay" class="assistant-overlay" onclick="toggleAssistant()"></div>
+<div id="assistantDrawer" class="assistant-drawer">
+  <div class="ad-header"><span>🎯 学习助手</span><button class="ad-close" onclick="toggleAssistant()">×</button></div>
+  <div class="ad-tabs">
+    <button class="ad-tab active" data-tab="scripts" onclick="switchAssistantTab('scripts')">话术库</button>
+    <button class="ad-tab" data-tab="weak" onclick="switchAssistantTab('weak')">薄弱点</button>
+    <button class="ad-tab" data-tab="badge" onclick="switchAssistantTab('badge')">徽章</button>
+    <button class="ad-tab" data-tab="time" onclick="switchAssistantTab('time')">时长</button>
+  </div>
+  <div class="ad-search-wrap" id="scriptSearchWrap" style="display:none;">
+    <input id="scriptSearch" class="ad-search" placeholder="🔍 搜话术 / 章节，如：异议、报价、关单" oninput="renderAssistant('scripts')">
+  </div>
+  <div class="ad-body" id="assistantBody"></div>
 </div>
 
 <script>
@@ -1023,6 +1069,8 @@ function init() {
   loadNotes();
   loadProgress();
   swapFinalScenario();
+  loadAssistantState();
+  sectionEnterTime = Date.now();
 }
 
 function renderSidebar() {
@@ -1083,6 +1131,7 @@ function navigateTo(index) {
     showToast('🔒 ' + check.msg, 'warning');
     return;
   }
+  recordSectionLeave();
   currentSection = index;
   document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
   document.querySelectorAll('.nav-section').forEach(n => n.classList.remove('active'));
@@ -1105,6 +1154,7 @@ function markComplete(index) {
   updateProgress();
   saveProgress();
   showToast('「' + courseData.sections[index].title + '」已完成 ✓', 'success');
+  checkStartBadge();
   checkCertificate();
 }
 
@@ -1178,6 +1228,12 @@ function selectQuizOption(el, optionIndex, quizId) {
   else if (quizId === 'quiz3') { quiz3Answered = true; }
   else if (quizId === 'quiz4') { quiz4Answered = true; }
   else if (quizId === 'quiz5') { quiz5Answered = true; }
+  if (!isCorrect) {
+    const si = courseData.sections.findIndex(function(s){ return s.quizId === quizId; });
+    if (si >= 0) trackWeak(si, '随堂选择题');
+  } else if (quiz1Answered && quiz2Answered && quiz3Answered && quiz4Answered && quiz5Answered) {
+    awardBadge('quiz');
+  }
   updateSidebarLocks();
   saveProgress();
 }
@@ -1303,6 +1359,7 @@ function submitFinalTask() {
   updateSidebarLocks();
   saveProgress();
   checkCertificate();
+  if (passed) awardBadge('final');
 }
 
 
@@ -1376,6 +1433,7 @@ function updateTimerDisplay() {
   if (el) el.textContent = timeStr;
   const mhTimer = document.getElementById('mhTimer');
   if (mhTimer) mhTimer.textContent = '⏱ ' + timeStr;
+  if (studySeconds >= 1800) awardBadge('time');
 }
 
 // ============================================================
@@ -1491,6 +1549,144 @@ function toggleSidebar() {
   document.getElementById('sidebar').classList.toggle('open');
   document.getElementById('sidebarOverlay').classList.toggle('show');
 }
+
+
+// ============================================================
+// 学习助手：速查话术库 / 薄弱点 / 徽章 / 分段时长
+// ============================================================
+let weakPoints = {};
+let badgesEarned = {};
+let sectionTimes = {};
+let sectionEnterTime = 0;
+let assistantTab = 'scripts';
+
+const scriptLibrary = [
+  { chapter:'01 询问感受', title:'佛系家长开场', content:'「XX妈妈，今天体验课刚结束，想先听听您感觉怎么样？小朋友上课的时候还配合吗？」' },
+  { chapter:'01 询问感受', title:'焦虑家长开场', content:'「XX妈您别急，先说说您最担心哪块？孩子今天上课其实有让您惊喜的地方～」' },
+  { chapter:'02 解读报告', title:'2优1缺 委婉解读', content:'「整体表现很棒，尤其是 XX 和 XX；有个小地方可以更好——XX，这正好是正课会重点加强的部分，不用急，系统练就能补上。」' },
+  { chapter:'03 观念强化', title:'窗口期观念', content:'「不用逼，但低年级是打底的黄金期，现在顺手养成，高年级才轻松。」' },
+  { chapter:'04 产品介绍', title:'师资 / 体系 / 服务', content:'「我们老师都是XX资质，体系是九阶螺旋，孩子级别的进度和练习都闭环跟踪，服务不脱节。」' },
+  { chapter:'05 学习规划', title:'正报（直接给方案）', content:'「按孩子现在的基础，直接给您报 S4 春季班，一周两节，配套练习册和测评。」' },
+  { chapter:'05 学习规划', title:'反推（从目标倒推）', content:'「您期望孩子半年后能达到 XX，倒推回来，现在就得把计算深度和表达练起来，所以方案是这样……」' },
+  { chapter:'06 报价', title:'正报 课包', content:'「这一期课包是 5888，含 45 节正课 + 5 节赠课，再送 24 次打卡营。」' },
+  { chapter:'06 报价', title:'反推 算单价', content:'「要达成您说的目标，至少需要这个课时量，折算下来单节才 XX 元，比后来补更划算。」' },
+  { chapter:'07 异议处理', title:'yes…but（嫌贵）', content:'「我理解您觉得贵（yes），不过您看孩子进步的这一个月，省下的补课费早就回来了（but）。」' },
+  { chapter:'07 异议处理', title:'yes…but（怕没效果）', content:'「我理解您怕没效果（yes），不过我们有学练测评数据每周反馈，效果看得见（but）。」' },
+  { chapter:'07 异议处理', title:'yes…but（要商量）', content:'「我理解您要跟爸爸商量（yes），不过可以先帮孩子保留一个名额，周末来体验不亏（but）。」' },
+  { chapter:'08 关单', title:'软关（多次）', content:'「这周末刚好有个名额，我先帮您保留着，您带娃来感受下正课节奏？」' },
+  { chapter:'08 关单', title:'硬关（黄金48h）', content:'「今天定下来的话，还能赶上这期开班优惠，咱们就把名报了吧？」' },
+  { chapter:'成交后', title:'发档话术', content:'「这是孩子今天的课堂报告和学习规划，您有空看看，有任何问题随时找我。」' },
+  { chapter:'成交后', title:'转介绍话术', content:'「XX妈妈用得满意，身边有朋友也想了解的话，推荐给我就好，老带新双方都有专属礼。」' }
+];
+
+const BADGES = [
+  { id:'start', ic:'📖', name:'入门', desc:'访问全部 12 个章节' },
+  { id:'quiz', ic:'✅', name:'随堂全对', desc:'5 道随堂选择题全部答对' },
+  { id:'final', ic:'🏆', name:'终考通关', desc:'终极考核 ≥ 80 分' },
+  { id:'time', ic:'⏱', name:'坚持学习', desc:'累计学习满 30 分钟' },
+  { id:'weakfix', ic:'🔁', name:'查漏补缺', desc:'标记薄弱点后回看复习' }
+];
+
+function loadAssistantState() {
+  try {
+    weakPoints = JSON.parse(localStorage.getItem(LS_PREFIX + '_weak') || '{}');
+    badgesEarned = JSON.parse(localStorage.getItem(LS_PREFIX + '_badges') || '{}');
+    sectionTimes = JSON.parse(localStorage.getItem(LS_PREFIX + '_sectimes') || '{}');
+  } catch(e) {}
+}
+function saveAssistantState() {
+  localStorage.setItem(LS_PREFIX + '_weak', JSON.stringify(weakPoints));
+  localStorage.setItem(LS_PREFIX + '_badges', JSON.stringify(badgesEarned));
+  localStorage.setItem(LS_PREFIX + '_sectimes', JSON.stringify(sectionTimes));
+}
+function toggleAssistant() {
+  const d = document.getElementById('assistantDrawer');
+  const o = document.getElementById('assistantOverlay');
+  const open = d.classList.toggle('open');
+  if (o) o.classList.toggle('show', open);
+  if (open) renderAssistant(assistantTab);
+}
+function switchAssistantTab(tab) {
+  assistantTab = tab;
+  const tabs = document.querySelectorAll('.ad-tab');
+  for (let i=0;i<tabs.length;i++) tabs[i].classList.toggle('active', tabs[i].dataset.tab === tab);
+  renderAssistant(tab);
+}
+function renderAssistant(tab) {
+  tab = tab || assistantTab;
+  const body = document.getElementById('assistantBody');
+  if (!body) return;
+  const sw = document.getElementById('scriptSearchWrap');
+  if (sw) sw.style.display = (tab === 'scripts') ? 'block' : 'none';
+  if (tab === 'scripts') {
+    const q = (document.getElementById('scriptSearch').value || '').trim();
+    const list = scriptLibrary.filter(function(s){
+      if (!q) return true;
+      return (s.title + s.chapter + s.content).indexOf(q) >= 0;
+    });
+    body.innerHTML = (list.length ? list.map(function(s, i){
+      return '<div class="script-item"><span class="si-tag">' + s.chapter + '</span><div class="si-title">' + s.title + '</div><div class="si-content">' + s.content + '</div><button class="si-copy" onclick="copyText(' + i + ')">📋 复制</button></div>';
+    }).join('') : '<div class="empty-tip">没有匹配的话术，换个关键词试试</div>');
+  } else if (tab === 'weak') {
+    const keys = Object.keys(weakPoints);
+    if (!keys.length) body.innerHTML = '<div class="empty-tip">🎉 暂无薄弱点，继续保持！<br>答错随堂题会自动标记在这里。</div>';
+    else body.innerHTML = keys.map(function(k){
+      const w = weakPoints[k];
+      return '<div class="weak-item"><span>⚠️ ' + w.title + '（错 ' + w.count + ' 次）</span><button onclick="navigateTo(' + k + ')">去复习</button></div>';
+    }).join('');
+  } else if (tab === 'badge') {
+    body.innerHTML = BADGES.map(function(b){
+      const got = !!badgesEarned[b.id];
+      return '<div class="badge-item' + (got ? '' : ' locked') + '"><div class="b-ic">' + b.ic + '</div><div class="b-name">' + b.name + (got ? ' ✓' : '') + '</div><div class="b-desc">' + b.desc + '</div></div>';
+    }).join('');
+  } else if (tab === 'time') {
+    let rows = courseData.sections.map(function(s, i){
+      const sec = sectionTimes[i] || 0;
+      const mm = Math.floor(sec/60), ss = sec%60;
+      return '<div class="time-item"><span>' + s.title + '</span><span>' + String(mm).padStart(2,'0') + ':' + String(ss).padStart(2,'0') + '</span></div>';
+    }).join('');
+    const total = Object.keys(sectionTimes).reduce(function(a,k){ return a + (sectionTimes[k]||0); }, 0);
+    const tmm = Math.floor(total/60), tss = total%60;
+    body.innerHTML = rows + '<div class="time-item" style="font-weight:700;border-color:var(--primary);"><span>累计</span><span>' + String(tmm).padStart(2,'0') + ':' + String(tss).padStart(2,'0') + '</span></div>';
+  }
+}
+function copyText(i) {
+  const t = scriptLibrary[i] ? scriptLibrary[i].content : '';
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(t).then(function(){ showToast('已复制话术','success'); }, function(){ fallbackCopy(t); });
+  } else fallbackCopy(t);
+}
+function fallbackCopy(t) {
+  const ta = document.createElement('textarea'); ta.value = t; document.body.appendChild(ta); ta.select();
+  try { document.execCommand('copy'); showToast('已复制话术','success'); } catch(e){ showToast('复制失败，请手动选择','warning'); }
+  document.body.removeChild(ta);
+}
+function trackWeak(secIdx, tag) {
+  const title = courseData.sections[secIdx] ? courseData.sections[secIdx].title : ('章节' + (secIdx+1));
+  if (!weakPoints[secIdx]) weakPoints[secIdx] = { title: title, count: 0 };
+  weakPoints[secIdx].count++;
+  saveAssistantState();
+  showToast('已标记薄弱点：' + title, 'warning');
+  if (document.getElementById('assistantDrawer').classList.contains('open')) renderAssistant('weak');
+}
+function awardBadge(id) {
+  if (badgesEarned[id]) return;
+  badgesEarned[id] = true; saveAssistantState();
+  const b = BADGES.find(function(x){ return x.id === id; });
+  showToast('🏅 获得徽章：' + (b ? b.name : id), 'success');
+  if (document.getElementById('assistantDrawer').classList.contains('open')) renderAssistant('badge');
+}
+function recordSectionLeave() {
+  if (sectionEnterTime && typeof currentSection !== 'undefined' && currentSection >= 0) {
+    const dt = Math.floor((Date.now() - sectionEnterTime)/1000);
+    if (dt > 0) { sectionTimes[currentSection] = (sectionTimes[currentSection]||0) + dt; saveAssistantState(); }
+  }
+  sectionEnterTime = Date.now();
+}
+function checkStartBadge() {
+  if (completedSections && completedSections.size >= courseData.sections.length) awardBadge('start');
+}
+
 
 document.addEventListener('DOMContentLoaded', init);
 </script>
