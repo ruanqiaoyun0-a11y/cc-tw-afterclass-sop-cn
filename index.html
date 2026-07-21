@@ -784,6 +784,62 @@ const courseData = {
           <div class="quiz-feedback" id="scen-s8fb"></div>
         </div>`
     },
+
+    {
+      id: 's8b', title: '📋 章中综合测验', duration: '8-10分钟', icon: '⚑', type: 'content',
+      content: `
+        <div class="section-header">
+          <span class="section-badge">阶段检核</span>
+          <h1>章中综合测验（前 6 步通关检）</h1>
+          <p class="duration">覆盖：询问感受 / 解读报告 / 观念强化 / 产品介绍 / 学习规划 / 报价</p>
+        </div>
+        <div class="highlight-box warning">⚠️ 本测验综合前 6 步，<b>≥ 5/6 题正确（约 80%）</b>方可解锁后续「异议处理 → 关单 → 成交后 → 终考」。可重复作答。</div>
+
+        <div class="card">
+          <h2 class="card-title">① 单选题</h2>
+          <div id="midMCWrap">
+            <div class="quiz-card">
+              <div class="quiz-question">1. 「询问感受」这一步的首要目的是？</div>
+              <div class="quiz-options">
+                <div class="quiz-option" data-option="0" onclick="selectMidMC(this,0,'mc1')"><span class="quiz-option-label">A</span><span>直接报价，趁热打铁</span></div>
+                <div class="quiz-option" data-option="1" onclick="selectMidMC(this,1,'mc1')"><span class="quiz-option-label">B</span><span>引导家长回忆体验、建立共情，而非单方面输出</span></div>
+                <div class="quiz-option" data-option="2" onclick="selectMidMC(this,2,'mc1')"><span class="quiz-option-label">C</span><span>详细讲解课程体系</span></div>
+                <div class="quiz-option" data-option="3" onclick="selectMidMC(this,3,'mc1')"><span class="quiz-option-label">D</span><span>催促家长尽快成交</span></div>
+              </div>
+            </div>
+            <div class="quiz-card" style="margin-top:16px;">
+              <div class="quiz-question">2. 「2 优 1 缺」解读报告时，那 1 个缺点应如何表达？</div>
+              <div class="quiz-options">
+                <div class="quiz-option" data-option="0" onclick="selectMidMC(this,0,'mc2')"><span class="quiz-option-label">A</span><span>直接说孩子基础很差</span></div>
+                <div class="quiz-option" data-option="1" onclick="selectMidMC(this,1,'mc2')"><span class="quiz-option-label">B</span><span>用「可以更棒的地方」委婉包装</span></div>
+                <div class="quiz-option" data-option="2" onclick="selectMidMC(this,2,'mc2')"><span class="quiz-option-label">C</span><span>完全不提缺点</span></div>
+                <div class="quiz-option" data-option="3" onclick="selectMidMC(this,3,'mc2')"><span class="quiz-option-label">D</span><span>让家长自己发现</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <h2 class="card-title">② 填空题</h2>
+          <p style="font-size:14px;margin-bottom:8px;">3. 观念强化要让家长意识到：<input id="mid-fill1" style="width:120px;padding:4px 8px;border:1px solid #cbd5e1;border-radius:6px;font-size:14px;" placeholder="__期"/> 是打底的黄金窗口。</p>
+          <p style="font-size:14px;margin-bottom:8px;">4. 产品介绍要讲清：师资、体系、<input id="mid-fill2" style="width:120px;padding:4px 8px;border:1px solid #cbd5e1;border-radius:6px;font-size:14px;" placeholder="____"/> 、服务 四大块。</p>
+        </div>
+
+        <div class="card">
+          <h2 class="card-title">③ 情景题</h2>
+          <p style="font-size:14px;margin-bottom:8px;">5. 家长说「孩子坐不住、怕伤眼睛」，请用产品介绍要点回应（写到关键词：护眼 / 动画 / 带领 / 正课）：</p>
+          <textarea id="mid-scn1" style="width:100%;min-height:64px;padding:8px 10px;border:1px solid #cbd5e1;border-radius:8px;font-size:14px;box-sizing:border-box;" placeholder="写下你的回应话术"></textarea>
+          <p style="font-size:14px;margin:12px 0 8px;">6. 报价时家长嫌贵，请用「反推法」回应（写到关键词：目标 / 倒推 / 课时 / 单价）：</p>
+          <textarea id="mid-scn2" style="width:100%;min-height:64px;padding:8px 10px;border:1px solid #cbd5e1;border-radius:8px;font-size:14px;box-sizing:border-box;" placeholder="写下你的回应话术"></textarea>
+        </div>
+
+        <div style="display:flex;gap:12px;margin:16px 0;">
+          <button class="btn" onclick="submitMidtest()">提交综合测验</button>
+          <button class="btn btn-outline" onclick="resetMidtest()">重新作答</button>
+        </div>
+        <div class="quiz-feedback" id="midFeedback" style="display:none;"></div>
+      `
+    },
     {
       id: 's9', title: '07 异议处理', duration: '15-20分钟', icon: '7', type: 'content_quiz', quizId: 'quiz4',
       content: `
@@ -1052,6 +1108,9 @@ let quiz4Answered = false;
 let quiz5Answered = false;
 let finalTaskSubmitted = false;
 let finalScore = 0;
+let midtestAnswered = false;
+let midtestPassed = false;
+let midMC = {};
 
 let studySeconds = 0;
 let timerInterval = null;
@@ -1120,8 +1179,9 @@ function canNavigateTo(index) {
   if (index > 2 && !quiz1Answered) return { ok: false, msg: '请先完成「01 询问感受」章节的互动选择题' };
   if (index > 5 && !quiz2Answered) return { ok: false, msg: '请先完成「04 产品介绍」章节的互动选择题' };
   if (index > 7 && !quiz3Answered) return { ok: false, msg: '请先完成「06 报价」章节的互动选择题' };
-  if (index > 8 && !quiz4Answered) return { ok: false, msg: '请先完成「07 异议处理」章节的互动选择题' };
-  if (index > 9 && !quiz5Answered) return { ok: false, msg: '请先完成「08 关单」章节的互动选择题' };
+  if (index > 8 && !midtestPassed) return { ok: false, msg: '请先通过「📋 章中综合测验」（前 6 步通关检）' };
+  if (index > 9 && !quiz4Answered) return { ok: false, msg: '请先完成「07 异议处理」章节的互动选择题' };
+  if (index > 10 && !quiz5Answered) return { ok: false, msg: '请先完成「08 关单」章节的互动选择题' };
   return { ok: true };
 }
 
@@ -1239,6 +1299,54 @@ function selectQuizOption(el, optionIndex, quizId) {
 }
 
 // ============================================================
+
+function selectMidMC(el, idx, itemId) {
+  const card = el.closest('.quiz-card');
+  if (card) card.querySelectorAll('.quiz-option').forEach(function(o){ o.classList.remove('selected'); });
+  el.classList.add('selected');
+  midMC[itemId] = idx;
+}
+function resetMidtest() {
+  midMC = {};
+  document.querySelectorAll('#midMCWrap .quiz-option').forEach(function(o){ o.classList.remove('selected','correct','wrong'); });
+  ['mid-fill1','mid-fill2','mid-scn1','mid-scn2'].forEach(function(id){ const e=document.getElementById(id); if(e) e.value=''; });
+  const fb = document.getElementById('midFeedback');
+  if (fb){ fb.style.display='none'; fb.innerHTML=''; fb.className='quiz-feedback'; }
+}
+function submitMidtest() {
+  let score = 0; const wrong = [];
+  if (midMC['mc1'] === 1) score++; else wrong.push('第1题 询问感受目的');
+  if (midMC['mc2'] === 1) score++; else wrong.push('第2题 2优1缺表达');
+  const f1 = (document.getElementById('mid-fill1').value||'').trim();
+  if (/窗口|低年级|黄金/.test(f1)) score++; else wrong.push('第3题 观念强化窗口期');
+  const f2 = (document.getElementById('mid-fill2').value||'').trim();
+  if (/课纲|练习|闭环|体系/.test(f2)) score++; else wrong.push('第4题 产品介绍四块');
+  const s1 = (document.getElementById('mid-scn1').value||'').trim();
+  const k1 = ['护眼','动画','带领','正课'].filter(function(k){ return s1.indexOf(k)>=0; }).length;
+  if (k1 >= 2) score++; else wrong.push('第5题 产品介绍应对（护眼/动画/带领/正课）');
+  const s2 = (document.getElementById('mid-scn2').value||'').trim();
+  const k2 = ['目标','倒推','课时','单价'].filter(function(k){ return s2.indexOf(k)>=0; }).length;
+  if (k2 >= 2) score++; else wrong.push('第6题 反推报价（目标/倒推/课时/单价）');
+
+  midtestAnswered = true;
+  const passed = score >= 5;
+  midtestPassed = passed;
+  saveProgress();
+  updateSidebarLocks();
+  const fb = document.getElementById('midFeedback');
+  fb.style.display = 'block';
+  fb.className = 'quiz-feedback show ' + (passed ? 'correct' : 'wrong');
+  let out = '<b>综合测验得分：' + score + ' / 6（约 ' + Math.round(score/6*100) + ' 分）</b><br>';
+  if (passed) {
+    out += '✅ 通过！已解锁后续章节（异议处理 → 关单 → 成交后 → 终考）。';
+    showToast('🎉 章中综合测验通过，已解锁后续章节', 'success');
+  } else {
+    out += '❌ 未达 5/6（当前 ' + score + '）。需补强：<br>· ' + wrong.join('<br>· ') + '<br>回看对应章节后可重新作答。';
+    showToast('综合测验未通过，请补强后重做', 'warning');
+  }
+  fb.innerHTML = out;
+}
+
 // AI 模拟对话组件
 // ============================================================
 function renderDialogue(quiz, sectionIndex) {
@@ -1466,7 +1574,7 @@ function loadNotes() {
 function saveProgress() {
   const state = {
     completedSections: [...completedSections],
-    quiz1Answered, quiz2Answered, quiz3Answered, quiz4Answered, quiz5Answered, finalTaskSubmitted, finalScore
+    quiz1Answered, quiz2Answered, quiz3Answered, quiz4Answered, quiz5Answered, midtestAnswered, midtestPassed, finalTaskSubmitted, finalScore
   };
   localStorage.setItem(LS_PREFIX + '_progress', JSON.stringify(state));
 }
@@ -1483,6 +1591,8 @@ function loadProgress() {
       quiz5Answered = saved.quiz5Answered || false;
       finalTaskSubmitted = saved.finalTaskSubmitted || false;
       finalScore = saved.finalScore || 0;
+      midtestAnswered = saved.midtestAnswered || false;
+      midtestPassed = saved.midtestPassed || false;
       updateProgress();
       updateSidebarLocks();
     }
@@ -1494,7 +1604,7 @@ function loadProgress() {
 // ============================================================
 function checkCertificate() {
   let allDone = completedSections.size >= courseData.sections.length;
-  allDone = allDone && quiz1Answered && quiz2Answered && quiz3Answered && quiz4Answered && quiz5Answered && finalTaskSubmitted && finalScore >= 80;
+  allDone = allDone && quiz1Answered && quiz2Answered && quiz3Answered && quiz4Answered && quiz5Answered && midtestPassed && finalTaskSubmitted && finalScore >= 80;
   if (allDone) {
     setTimeout(() => {
       showToast('🏆 恭喜完成全部课程！点击领取结业证书', 'success');
