@@ -1519,21 +1519,31 @@ function submitFinalTask() {
 
 
 function checkFill(inputId, answers, analysis, fbId) {
-  const v = (document.getElementById(inputId).value || '').trim();
-  const fb = document.getElementById(fbId);
-  const ok = answers.split(',').some(function(a){ return v.indexOf(a.trim()) >= 0; });
-  fb.className = 'quiz-feedback show ' + (ok ? 'correct' : 'wrong');
-  fb.innerHTML = ok ? '✅ 答对了！' : ('❌ 不正确。' + analysis);
+  try {
+    const v = (document.getElementById(inputId).value || '').trim();
+    const fb = document.getElementById(fbId);
+    const ok = answers.split(',').some(function(a){ return v.indexOf(a.trim()) >= 0; });
+    fb.className = 'quiz-feedback show ' + (ok ? 'correct' : 'wrong');
+    fb.innerHTML = ok ? '✅ 答对了！' : ('❌ 不正确。' + analysis);
+  } catch (err) {
+    const fb = document.getElementById(fbId);
+    if (fb) { fb.className = 'quiz-feedback show wrong'; fb.innerHTML = '⚠️ 提交出错：' + (err && err.message ? err.message : err); }
+  }
 }
 function checkScenario(inputId, keywords, sample, fbId) {
-  const v = (document.getElementById(inputId).value || '').trim();
-  const fb = document.getElementById(fbId);
-  const ks = keywords.split(',');
-  const hit = ks.filter(function(k){ return v.indexOf(k.trim()) >= 0; }).length;
-  const rate = hit / ks.length;
-  fb.className = 'quiz-feedback show ' + (rate >= 0.5 ? 'correct' : 'wrong');
-  fb.innerHTML = (rate >= 0.5 ? '✅ 覆盖到位（命中 ' + hit + '/' + ks.length + ' 关键词）：' : '❌ 还差一点（命中 ' + hit + '/' + ks.length + ' 关键词）：') +
-    '<br>📌 标准操作：' + sample + (rate < 0.5 ? '<br>⚠️ 错误弊端：未覆盖关键动作，易被家长带节奏。' : '');
+  try {
+    const v = (document.getElementById(inputId).value || '').trim();
+    const fb = document.getElementById(fbId);
+    const ks = keywords.split(',');
+    const hit = ks.filter(function(k){ return v.indexOf(k.trim()) >= 0; }).length;
+    const rate = hit / ks.length;
+    fb.className = 'quiz-feedback show ' + (rate >= 0.5 ? 'correct' : 'wrong');
+    fb.innerHTML = (rate >= 0.5 ? '✅ 覆盖到位（命中 ' + hit + '/' + ks.length + ' 关键词）：' : '❌ 还差一点（命中 ' + hit + '/' + ks.length + ' 关键词）：') +
+      '<br>📌 标准操作：' + sample + (rate < 0.5 ? '<br>⚠️ 错误弊端：未覆盖关键动作，易被家长带节奏。' : '');
+  } catch (err) {
+    const fb = document.getElementById(fbId);
+    if (fb) { fb.className = 'quiz-feedback show wrong'; fb.innerHTML = '⚠️ 提交出错：' + (err && err.message ? err.message : err); }
+  }
 }
 
 function resetFinalTask() {
@@ -1920,6 +1930,14 @@ function aiEndScore() {
     })
     .catch(function(e){ showToast('评分请求失败：' + e, 'error'); });
 }
+
+// 全局错误兜底：把「点了没反应」这种静默失败变成可见提示，便于排查
+window.addEventListener('error', function (e) {
+  try {
+    var msg = (e && e.message) ? e.message : '未知脚本错误';
+    if (window.showToast) showToast('⚠️ 页面脚本错误：' + msg, 'error');
+  } catch (_) {}
+});
 
 document.addEventListener('DOMContentLoaded', init);
 </script>
