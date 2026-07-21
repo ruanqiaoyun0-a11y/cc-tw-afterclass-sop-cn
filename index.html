@@ -1436,7 +1436,7 @@ function loadProgress() {
 // ============================================================
 function checkCertificate() {
   let allDone = completedSections.size >= courseData.sections.length;
-  allDone = allDone && quiz1Answered && quiz2Answered && quiz3Answered && quiz4Answered && quiz5Answered && finalTaskSubmitted && finalScore >= 60;
+  allDone = allDone && quiz1Answered && quiz2Answered && quiz3Answered && quiz4Answered && quiz5Answered && finalTaskSubmitted && finalScore >= 80;
   if (allDone) {
     setTimeout(() => {
       showToast('🏆 恭喜完成全部课程！点击领取结业证书', 'success');
