@@ -442,9 +442,7 @@ video { width: 100%; border-radius: var(--radius-sm); background: #000; }
       <button class="btn btn-outline" style="padding:6px 10px;font-size:12px;white-space:nowrap;" onclick="aiSaveProxy()">保存</button>
     </div>
     <div class="ai-scen">
-      <button onclick="aiPickScenario(0)">暖暖</button>
-      <button onclick="aiPickScenario(1)">小宇</button>
-      <button onclick="aiPickScenario(2)">乐乐</button>
+      <button onclick="aiPickScenario(0)" class="active">暖暖</button>
     </div>
     <div class="ai-chat" id="aiChat"></div>
     <div class="ai-score" id="aiScore"></div>
@@ -1434,17 +1432,11 @@ function setupFinalTaskListener() {
 }
 
 
-// 终极考核：3 套随机场景
+// 终极考核 / AI 对练：仅保留「暖暖」单一场景
 const finalScenarios = [
   { title:'场景一：暖暖（基础中，妈妈陪同，计算弱）',
     html:'<p><strong>学员信息：</strong>暖暖，女，6岁10个月，一年级</p><p><strong>课前：</strong>性格外向，数感一般，50 以内加减法还不会。</p><p><strong>课后：</strong>环节一有序枚举；环节二三位数理解好；环节三 20 以内进退位不熟，有序/分步思考需加强。</p><p><strong>匹配阶段：</strong>是，基础中。</p><p><strong>老师反馈：</strong>家长已出席，介绍五大模块与更多练习题，重点讲计算深度，已告知可跟顾问沟通。</p>',
-    objection:'家长说：「我再想想，先跟爸爸商量一下。」请用 yes…but… 写一句接话。' },
-  { title:'场景二：小宇（基础弱，阿嬷陪同，怕线上伤眼）',
-    html:'<p><strong>学员信息：</strong>小宇，男，5岁8个月，大班。</p><p><strong>课前：</strong>坐不住，阿嬷陪同，家里担心屏幕伤眼。</p><p><strong>课后：</strong>喜欢动画但专注短；环节二数感弱；环节三需大量带领。</p><p><strong>匹配阶段：</strong>是，基础弱。</p><p><strong>老师反馈：</strong>阿嬷关心护眼，已说明护眼模式，家长无强烈反对。</p>',
-    objection:'阿嬷说：「天天看屏幕对眼睛不好啦。」请用 yes…but… 写一句接话。' },
-  { title:'场景三：乐乐（程度好，爸爸主导，嫌贵要商量）',
-    html:'<p><strong>学员信息：</strong>乐乐，女，7岁2个月，二年级。</p><p><strong>课前：</strong>程度好、主动，爸爸主导决策，常比价。</p><p><strong>课后：</strong>三环节都好，可进阶级；爸爸觉得「不便宜，要商量」。</p><p><strong>匹配阶段：</strong>是，可进阶。</p><p><strong>老师反馈：</strong>爸爸认可效果但嫌贵，需价值+价格双解。</p>',
-    objection:'爸爸说：「效果是不错，但太贵了，我再比较一下。」请用 yes…but… 写一句接话。' }
+    objection:'家长说：「我再想想，先跟爸爸商量一下。」请用 yes…but… 写一句接话。' }
 ];
 let currentFinalScenario = null;
 function swapFinalScenario() {
