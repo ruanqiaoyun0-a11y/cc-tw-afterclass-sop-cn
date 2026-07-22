@@ -392,6 +392,7 @@ video { width: 100%; border-radius: var(--radius-sm); background: #000; }
       <p>全部课程内容并通过考核</p>
       <div class="cert-score" id="certScore">综合评定：通过</div>
       <div class="cert-final-score" id="certFinalScore">终极考核得分：—</div>
+      <div class="cert-final-score" id="certReviewScore">课后流程梳理得分：—</div>
     </div>
     <div class="cert-footer">
       <span id="certDate"></span>
@@ -1020,7 +1021,91 @@ const courseData = {
           <div class="highlight-box warning">
             ⚠️ 24h 内未发齐三文件：每漏 1 项扣 __ 分（依内部 SOP）；承诺未兑现（如没介绍班导）扣 __ 分；家长投诉「没人跟进」重扣 + 主管复盘。
           </div>
-        </div>`
+          </div>`
+    },
+    {
+      id: 's11b', title: '📋 课后流程梳理', duration: '8-10分钟', icon: '🧭', type: 'content',
+      content: `
+        <div class="section-header">
+          <span class="section-badge">终极考核前总复盘</span>
+          <h1>课后沟通全流程梳理</h1>
+          <p class="duration">覆盖 8 大步骤 + 成交后，用单选题与多选题帮您完整串联</p>
+        </div>
+        <div class="highlight-box warning">⚠️ 这是终极考核前的总复盘：<b>≥ 4/6 题正确（约 67%）</b>方可解锁「终极考核」。含单选题与多选题，可重复作答，得分将记入结业证书。</div>
+
+        <div class="card">
+          <h2 class="card-title">① 单选题</h2>
+          <div id="reviewMCWrap">
+            <div class="quiz-card">
+              <div class="quiz-question">1. 课后电话回访的第一步（01 询问感受）核心目的是？</div>
+              <div class="quiz-options">
+                <div class="quiz-option" data-option="0" onclick="selectReviewMC(this,0,'rq1')"><span class="quiz-option-label">A</span><span>直接报价，趁热打铁成交</span></div>
+                <div class="quiz-option" data-option="1" onclick="selectReviewMC(this,1,'rq1')"><span class="quiz-option-label">B</span><span>引导家长回忆课堂体验、建立共情，而非单方面输出</span></div>
+                <div class="quiz-option" data-option="2" onclick="selectReviewMC(this,2,'rq1')"><span class="quiz-option-label">C</span><span>详细讲解整套课程体系</span></div>
+                <div class="quiz-option" data-option="3" onclick="selectReviewMC(this,3,'rq1')"><span class="quiz-option-label">D</span><span>催促家长尽快成交</span></div>
+              </div>
+            </div>
+            <div class="quiz-card" style="margin-top:16px;">
+              <div class="quiz-question">2. 解读课后报告时，最推荐的结构是？</div>
+              <div class="quiz-options">
+                <div class="quiz-option" data-option="0" onclick="selectReviewMC(this,0,'rq2')"><span class="quiz-option-label">A</span><span>只夸优点，回避所有不足</span></div>
+                <div class="quiz-option" data-option="1" onclick="selectReviewMC(this,1,'rq2')"><span class="quiz-option-label">B</span><span>「2 优 1 缺」：肯定亮点，用「可以更棒的地方」委婉包装不足</span></div>
+                <div class="quiz-option" data-option="2" onclick="selectReviewMC(this,2,'rq2')"><span class="quiz-option-label">C</span><span>只讲缺点，制造焦虑</span></div>
+                <div class="quiz-option" data-option="3" onclick="selectReviewMC(this,3,'rq2')"><span class="quiz-option-label">D</span><span>把报告直接发家长自己看</span></div>
+              </div>
+            </div>
+            <div class="quiz-card" style="margin-top:16px;">
+              <div class="quiz-question">3. 关单（08）阶段最稳妥的做法是？</div>
+              <div class="quiz-options">
+                <div class="quiz-option" data-option="0" onclick="selectReviewMC(this,0,'rq3')"><span class="quiz-option-label">A</span><span>一次性硬关单，被拒就放弃</span></div>
+                <div class="quiz-option" data-option="1" onclick="selectReviewMC(this,1,'rq3')"><span class="quiz-option-label">B</span><span>多次软关单，用名额 / 时间 / 规划逐步推进</span></div>
+                <div class="quiz-option" data-option="2" onclick="selectReviewMC(this,2,'rq3')"><span class="quiz-option-label">C</span><span>完全不主动关单</span></div>
+                <div class="quiz-option" data-option="3" onclick="selectReviewMC(this,3,'rq3')"><span class="quiz-option-label">D</span><span>直接大幅降价</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <h2 class="card-title">② 多选题（选出所有正确的选项）</h2>
+          <div id="reviewMMCWrap">
+            <div class="quiz-card">
+              <div class="quiz-question">4. 产品介绍（04）通常要讲清的「四大块」包含哪些？【多选】</div>
+              <div class="quiz-options">
+                <div class="quiz-option" data-option="0" onclick="selectReviewMMC(this,0,'rq4')"><span class="quiz-option-label">A</span><span>师资</span></div>
+                <div class="quiz-option" data-option="1" onclick="selectReviewMMC(this,1,'rq4')"><span class="quiz-option-label">B</span><span>体系</span></div>
+                <div class="quiz-option" data-option="2" onclick="selectReviewMMC(this,2,'rq4')"><span class="quiz-option-label">C</span><span>课纲 / 练习</span></div>
+                <div class="quiz-option" data-option="3" onclick="selectReviewMMC(this,3,'rq4')"><span class="quiz-option-label">D</span><span>服务</span></div>
+                <div class="quiz-option" data-option="4" onclick="selectReviewMMC(this,4,'rq4')"><span class="quiz-option-label">E</span><span>竞品报价</span></div>
+              </div>
+            </div>
+            <div class="quiz-card" style="margin-top:16px;">
+              <div class="quiz-question">5. 「yes…but…」异议处理句式的两个关键作用是？【多选】</div>
+              <div class="quiz-options">
+                <div class="quiz-option" data-option="0" onclick="selectReviewMMC(this,0,'rq5')"><span class="quiz-option-label">A</span><span>先用 yes 共情认同家长顾虑</span></div>
+                <div class="quiz-option" data-option="1" onclick="selectReviewMMC(this,1,'rq5')"><span class="quiz-option-label">B</span><span>再用 but 转折给出专业解释</span></div>
+                <div class="quiz-option" data-option="2" onclick="selectReviewMMC(this,2,'rq5')"><span class="quiz-option-label">C</span><span>直接反驳家长说得不对</span></div>
+                <div class="quiz-option" data-option="3" onclick="selectReviewMMC(this,3,'rq5')"><span class="quiz-option-label">D</span><span>完全顺从家长、不再解释</span></div>
+              </div>
+            </div>
+            <div class="quiz-card" style="margin-top:16px;">
+              <div class="quiz-question">6. 观念强化（03）希望家长建立的正确认知包括？【多选】</div>
+              <div class="quiz-options">
+                <div class="quiz-option" data-option="0" onclick="selectReviewMMC(this,0,'rq6')"><span class="quiz-option-label">A</span><span>低年级 / 基础期是打底的黄金窗口</span></div>
+                <div class="quiz-option" data-option="1" onclick="selectReviewMMC(this,1,'rq6')"><span class="quiz-option-label">B</span><span>越早系统规划，越能补齐计算深度短板</span></div>
+                <div class="quiz-option" data-option="2" onclick="selectReviewMMC(this,2,'rq6')"><span class="quiz-option-label">C</span><span>等孩子大一点、上学后再学也不迟</span></div>
+                <div class="quiz-option" data-option="3" onclick="selectReviewMMC(this,3,'rq6')"><span class="quiz-option-label">D</span><span>计算理解深度比盲目刷题量更重要</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div style="display:flex;gap:12px;margin:16px 0;">
+          <button class="btn" onclick="submitReview()">提交流程梳理</button>
+          <button class="btn btn-outline" onclick="resetReview()">重新作答</button>
+        </div>
+        <div class="quiz-feedback" id="reviewFeedback" style="display:none;"></div>
+      `
     },
     {
       id: 's12', title: '终极考核', duration: '15-20分钟', icon: '🏆', type: 'content',
@@ -1155,6 +1240,11 @@ let finalScore = 0;
 let midtestAnswered = false;
 let midtestPassed = false;
 let midMC = {};
+let reviewAnswered = false;
+let reviewPassed = false;
+let reviewScore = 0;
+let reviewMC = {};
+let reviewMMC = {};
 
 let studySeconds = 0;
 let timerInterval = null;
@@ -1226,6 +1316,7 @@ function canNavigateTo(index) {
   if (index > 8 && !midtestPassed) return { ok: false, msg: '请先通过「📋 章中综合测验」（前 6 步通关检）' };
   if (index > 9 && !quiz4Answered) return { ok: false, msg: '请先完成「07 异议处理」章节的互动选择题' };
   if (index > 10 && !quiz5Answered) return { ok: false, msg: '请先完成「08 关单」章节的互动选择题' };
+  if (index > 12 && !reviewPassed) return { ok: false, msg: '请先通过「📋 课后流程梳理」（终极考核前总复盘）' };
   return { ok: true };
 }
 
@@ -1387,6 +1478,59 @@ function submitMidtest() {
   } else {
     out += '❌ 未达 5/6（当前 ' + score + '）。需补强：<br>· ' + wrong.join('<br>· ') + '<br>回看对应章节后可重新作答。';
     showToast('综合测验未通过，请补强后重做', 'warning');
+  }
+  fb.innerHTML = out;
+}
+
+// 课后流程梳理（终极考核前总复盘）：单选题 + 多选题
+function sameSet(a, b) {
+  if (!a || !b || a.length !== b.length) return false;
+  const sa = [...a].sort(), sb = [...b].sort();
+  return sa.every(function(v, i){ return v === sb[i]; });
+}
+function selectReviewMC(el, idx, itemId) {
+  const card = el.closest('.quiz-card');
+  if (card) card.querySelectorAll('.quiz-option').forEach(function(o){ o.classList.remove('selected'); });
+  el.classList.add('selected');
+  reviewMC[itemId] = idx;
+}
+function selectReviewMMC(el, idx, itemId) {
+  if (!reviewMMC[itemId]) reviewMMC[itemId] = [];
+  const arr = reviewMMC[itemId];
+  const pos = arr.indexOf(idx);
+  if (pos >= 0) arr.splice(pos, 1); else arr.push(idx);
+  el.classList.toggle('selected');
+}
+function resetReview() {
+  reviewMC = {}; reviewMMC = {};
+  document.querySelectorAll('#reviewMCWrap .quiz-option, #reviewMMCWrap .quiz-option').forEach(function(o){ o.classList.remove('selected'); });
+  const fb = document.getElementById('reviewFeedback');
+  if (fb){ fb.style.display='none'; fb.innerHTML=''; fb.className='quiz-feedback'; }
+}
+function submitReview() {
+  let score = 0; const wrong = [];
+  if (reviewMC['rq1'] === 1) score++; else wrong.push('第1题 询问感受目的');
+  if (reviewMC['rq2'] === 1) score++; else wrong.push('第2题 报告解读结构');
+  if (reviewMC['rq3'] === 1) score++; else wrong.push('第3题 关单做法');
+  if (sameSet(reviewMMC['rq4'] || [], [0,1,2,3])) score++; else wrong.push('第4题 产品四块');
+  if (sameSet(reviewMMC['rq5'] || [], [0,1])) score++; else wrong.push('第5题 yes·but');
+  if (sameSet(reviewMMC['rq6'] || [], [0,1,3])) score++; else wrong.push('第6题 观念强化');
+  reviewScore = score;
+  reviewAnswered = true;
+  const passed = score >= 4;
+  reviewPassed = passed;
+  saveProgress();
+  updateSidebarLocks();
+  const fb = document.getElementById('reviewFeedback');
+  fb.style.display = 'block';
+  fb.className = 'quiz-feedback show ' + (passed ? 'correct' : 'wrong');
+  let out = '<b>课后流程梳理得分：' + score + ' / 6（约 ' + Math.round(score/6*100) + ' 分）</b><br>';
+  if (passed) {
+    out += '✅ 通过！已解锁「终极考核」。';
+    showToast('🎉 课后流程梳理通过，已解锁终极考核', 'success');
+  } else {
+    out += '❌ 未达 4/6（当前 ' + score + '）。需补强：<br>· ' + wrong.join('<br>· ') + '<br>回看对应章节后可重新作答。';
+    showToast('流程梳理未通过，请补强后重做', 'warning');
   }
   fb.innerHTML = out;
 }
@@ -1622,7 +1766,7 @@ function loadNotes() {
 function saveProgress() {
   const state = {
     completedSections: [...completedSections],
-    quiz1Answered, quiz2Answered, quiz3Answered, quiz4Answered, quiz5Answered, midtestAnswered, midtestPassed, finalTaskSubmitted, finalScore
+    quiz1Answered, quiz2Answered, quiz3Answered, quiz4Answered, quiz5Answered, midtestAnswered, midtestPassed, reviewAnswered, reviewPassed, reviewScore, finalTaskSubmitted, finalScore
   };
   localStorage.setItem(LS_PREFIX + '_progress', JSON.stringify(state));
 }
@@ -1641,6 +1785,9 @@ function loadProgress() {
       finalScore = saved.finalScore || 0;
       midtestAnswered = saved.midtestAnswered || false;
       midtestPassed = saved.midtestPassed || false;
+      reviewAnswered = saved.reviewAnswered || false;
+      reviewPassed = saved.reviewPassed || false;
+      reviewScore = saved.reviewScore || 0;
       updateProgress();
       updateSidebarLocks();
     }
@@ -1652,13 +1799,14 @@ function loadProgress() {
 // ============================================================
 function checkCertificate() {
   let allDone = completedSections.size >= courseData.sections.length;
-  allDone = allDone && quiz1Answered && quiz2Answered && quiz3Answered && quiz4Answered && quiz5Answered && midtestPassed && finalTaskSubmitted && finalScore >= 80;
+  allDone = allDone && quiz1Answered && quiz2Answered && quiz3Answered && quiz4Answered && quiz5Answered && midtestPassed && reviewPassed && finalTaskSubmitted && finalScore >= 80;
   if (allDone) {
     setTimeout(() => {
       showToast('🏆 恭喜完成全部课程！点击领取结业证书', 'success');
       document.getElementById('certStudentName').textContent = '请填写姓名';
       document.getElementById('certScore').textContent = '综合评定：通过';
       document.getElementById('certFinalScore').textContent = '终极考核得分：' + (typeof finalScore !== 'undefined' ? finalScore : '—') + ' 分';
+      document.getElementById('certReviewScore').textContent = '课后流程梳理：' + (typeof reviewScore !== 'undefined' ? reviewScore : '—') + ' / 6 题';
       document.getElementById('certDate').textContent = new Date().toLocaleDateString('zh-CN', { year: 'numeric', month: 'long', day: 'numeric' });
       document.getElementById('certOverlay').style.display = 'flex';
     }, 1000);
